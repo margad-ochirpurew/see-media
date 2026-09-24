@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEE MEDIA - Reel Film Challenge Маркетингийн Нэгдсэн Стратеги</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (xlsx) for direct Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- FontAwesome Icon CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 310px;
+            max-height: 380px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 340px;
+            }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .sheet-th {
+            background-color: #1e3d34;
+            color: #ffffff;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 9px 12px;
+            text-align: left;
+            font-weight: 700;
+            border: 1px solid #2d554a;
+            white-space: nowrap;
+        }
+        .sheet-td {
+            padding: 8px 12px;
+            font-size: 0.78rem;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-20 right-5 z-50 transform translate-y-[-150%] opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-emerald-500/40 text-sm font-medium">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMsg">Мэдээлэл шинэчлэгдлээ</span>
+    </div>
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <!-- Nav Header Logo -->
+                    <div class="flex items-center justify-center">
+                        <img src="logo.jpg" alt="SEE MEDIA Logo" class="h-11 w-auto max-w-[130px] object-contain rounded-lg">
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg font-bold text-slate-900 tracking-tight leading-none">SEE MEDIA</span>
+                            <span class="px-2 py-0.5 text-[10px] font-extrabold bg-brand-100 text-brand-800 rounded-full">STREAMING</span>
+                        </div>
+                        <span class="text-xs text-brand-700 font-semibold uppercase tracking-wider">Reel Film Challenge Стратеги</span>
+                    </div>
+                </div>
+                
+                <nav class="hidden md:flex space-x-1 lg:space-x-3 text-sm font-medium">
+                    <button onclick="scrollToSection('overview')" class="px-3 py-2 text-slate-600 hover:text-brand-600 transition">Тойм & KPIs</button>
+                    <button onclick="scrollToSection('tables')" class="px-3 py-2 text-slate-600 hover:text-brand-600 transition font-semibold text-emerald-700 flex items-center gap-1.5"><i class="fa-solid fa-table"></i> Хүснэгтүүд (Excel)</button>
+                    <button onclick="scrollToSection('timeline')" class="px-3 py-2 text-slate-600 hover:text-brand-600 transition">7 Хоногийн Төлөвлөгөө</button>
+                    <button onclick="scrollToSection('sponsors')" class="px-3 py-2 text-slate-600 hover:text-brand-600 transition">Спонсор Багцууд</button>
+                    <button onclick="scrollToSection('calculator')" class="px-3 py-2 text-slate-600 hover:text-brand-600 transition">Тооцоолуур</button>
+                </nav>
+
+                <div class="flex items-center gap-2.5">
+                    <button onclick="downloadAllExcel()" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow transition transform active:scale-95">
+                        <i class="fa-solid fa-file-excel text-emerald-100"></i>
+                        <span>Excel Татах (.xlsx)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- SECTION 1: EXECUTIVE OVERVIEW & PLATFORM CONTEXT -->
+        <section id="overview" class="space-y-6">
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-brand-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold border border-brand-500/30">
+                            <i class="fa-solid fa-trophy text-amber-400"></i> Шагналын Сан: 30,000,000₮
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-500/30">
+                            <i class="fa-solid fa-tv"></i> LookTV шиг Стриминг Апп Модел
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+                        "Reel Film Challenge" Маркетингийн Нэгдсэн Стратеги & Үйл Ажиллагааны Хөтөч
+                    </h1>
+                    <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                        Монголын тэргүүлэгч стриминг платформуудын нэг болох "SEE MEDIA" нь уралдаанд шалгарсан 20 уран бүтээлч багийн албан ёсны удирдамжид бүтээгдэхүүнийг тань зохиол, дүр, үзэгдэлд байгалийн зохицолтойгоор шингээх шаардлага тусгахаас гадна киноны эхлэлийн 5 секундийн реклам, аппын баннер болон сошиал сувгуудын түгээлтээр нийт 10 сая хандалтыг бүрдүүлэн ажиллах хамтын ажиллагааны хосолмол шийдлийг санал болгож байна.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-4 text-xs font-medium text-slate-300">
+                        <span><i class="fa-solid fa-film text-brand-400 mr-1.5"></i> 20 Баг (Нийт 40 Богино Кино)</span>
+                        <span><i class="fa-solid fa-circle-play text-brand-400 mr-1.5"></i> Сошиалд эхний 2 анги ҮНЭГҮЙ -> Үлдсэн ангиуд SEE MEDIA апп-д</span>
+                        <span><i class="fa-solid fa-handshake text-brand-400 mr-1.5"></i> Удирдамжаар дамжсан бүтээгдэхүүн сурталчилгаа</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real Metric Cards Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Зорилтот Үзэлт</span>
+                        <i class="fa-solid fa-eye text-brand-600 text-base"></i>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">10,000,000</div>
+                    <p class="text-[11px] text-brand-600 mt-1 font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-trend-up"></i> Дундаж үзэлт: 100,000 / Дээд: 3.0M
+                    </p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Нийт Сошиал Хүрээлэл</span>
+                        <i class="fa-solid fa-users text-blue-600 text-base"></i>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">217,300+</div>
+                    <p class="text-[11px] text-slate-500 mt-1">FB 3 хуудас (198K) + IG (19.3K)</p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Оролцогч Бүтээл</span>
+                        <i class="fa-solid fa-clapperboard text-purple-600 text-base"></i>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">40 Кино</div>
+                    <p class="text-[11px] text-slate-500 mt-1">Нийт 80 үнэгүй сурталчилгааны анги</p>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider">Спонсорын Зорилтот Сан</span>
+                        <i class="fa-solid fa-sack-dollar text-amber-600 text-base"></i>
+                    </div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-slate-900">35,000,000₮</div>
+                    <p class="text-[11px] text-emerald-600 font-semibold mt-1">Gold, Silver, Bronze багцуудаар</p>
+                </div>
+            </div>
+
+            <!-- Social Distribution Chart & Streaming Strategy -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Social Channels Chart -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <h3 class="text-base font-bold text-slate-900">SEE MEDIA Албан Ёсны Сувгууд</h3>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-100 text-emerald-800">217.3K Нийт Дагагч</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">FB 3 албан пэйж (198K) болон Instagram (19.3K) сувгуудын задаргаа</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="socialAudienceChart"></canvas>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-1">
+                        <div class="flex justify-between">
+                            <span class="flex items-center gap-1.5"><i class="fa-brands fa-facebook text-blue-600"></i> FB Хуудас #1:</span>
+                            <strong class="text-slate-800">74,000 дагагч</strong>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="flex items-center gap-1.5"><i class="fa-brands fa-facebook text-blue-500"></i> FB Хуудас #2:</span>
+                            <strong class="text-slate-800">65,000 дагагч</strong>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="flex items-center gap-1.5"><i class="fa-brands fa-facebook text-blue-400"></i> FB Хуудас #3:</span>
+                            <strong class="text-slate-800">59,000 дагагч</strong>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="flex items-center gap-1.5"><i class="fa-brands fa-instagram text-pink-600"></i> Instagram хуудас:</span>
+                            <strong class="text-slate-800">19,300 (Highlight 2.0M)</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategic Streaming & Posting Plan -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">Стриминг Платформын Сурталчилгааны Горим</h3>
+                                <p class="text-xs text-slate-500">Удирдамжийн дагуу кино бүрт спонсор бүтээгдэхүүн шингээх зарчим</p>
+                            </div>
+                            <span class="self-start sm:self-auto px-3 py-1 bg-brand-50 text-brand-700 text-xs font-bold rounded-lg border border-brand-200">
+                                07:00 - 09:00 & 18:00 - 23:00 (Цацах цаг)
+                            </span>
+                        </div>
+                        
+                        <!-- 3 Core Pillars -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 my-3">
+                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm mb-2">
+                                    <i class="fa-solid fa-file-contract"></i>
+                                </div>
+                                <h4 class="text-xs font-bold text-slate-800 mb-1">Уралдааны Удирдамж</h4>
+                                <p class="text-[11px] text-slate-500 leading-relaxed">
+                                    Багуудад тавих удирдамжид спонсор бүтээгдэхүүнийг (CU, GS25, Ундаа, Банк г.м) киноны үзэгдэлд харуулах шаардлага зааж өгнө.
+                                </p>
+                            </div>
+
+                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                                <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm mb-2">
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                </div>
+                                <h4 class="text-xs font-bold text-slate-800 mb-1">Сошиал Цацалт (Үнэгүй)</h4>
+                                <p class="text-[11px] text-slate-500 leading-relaxed">
+                                    Кино бүрийн эхний 2 ангийг 3 FB хуудас (198K), IG (19.3K) дээр өдөр бүр үнэгүй нийтэлж, сонирхол татах цэг дээр тасална.
+                                </p>
+                            </div>
+
+                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm mb-2">
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                </div>
+                                <h4 class="text-xs font-bold text-slate-800 mb-1">Апп руу Шилжүүлэлт</h4>
+                                <p class="text-[11px] text-slate-500 leading-relaxed">
+                                    "Үргэлжлэлийг SEE MEDIA апп-аас үзээрэй" гэсэн тодорхой уриалга (CTA)-аар үзэгчдийг платформ руу татна.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 mt-2">
+                            <div class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-lightbulb text-amber-600 mt-0.5 text-sm"></i>
+                                <div class="text-xs text-amber-900 leading-relaxed">
+                                    <strong>Хүчирхэг үзүүлэлт:</strong> SEE MEDIA нь дундаж үзэлт <strong>100,000</strong>, дээд тал нь <strong>3,000,000</strong> үзэлт авсан бодит туршлагатай тул 10 сая үзэлтэд хүрэх зорилт бүрэн бодитой бөгөөд спонсоруудад өндөр өгөөж өгнө.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center text-xs text-slate-600 gap-2">
+                        <span class="inline-flex items-center"><i class="fa-solid fa-clock text-brand-600 mr-1.5"></i> Өглөө 07:00-09:00 (Түгжрэл, мэдээлэл авах үе)</span>
+                        <span class="inline-flex items-center"><i class="fa-solid fa-moon text-indigo-600 mr-1.5"></i> Орой 18:00-23:00 (Амралт, кино үзэх гол цаг)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: EXCEL TABLES INTEGRATED -->
+        <section id="tables" class="space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 text-emerald-700 font-bold text-xs uppercase tracking-wider mb-1">
+                            <i class="fa-solid fa-table"></i> Албан ёсны Хүснэгтүүд (Excel Data)
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Төслийн Үйл Ажиллагаа & Хяналтын Хүснэгтүүд</h2>
+                        <p class="text-xs sm:text-sm text-slate-500">Доорх 5 хүснэгтийг шууд үзэж, Excel (.xlsx) хэлбэрээр татаж авах боломжтой.</p>
+                    </div>
+
+                    <button onclick="downloadAllExcel()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-lg transition">
+                        <i class="fa-solid fa-file-excel text-base"></i>
+                        <span>Бүх Хүснэгтийг Excel-ээр Татах (.xlsx)</span>
+                    </button>
+                </div>
+
+                <!-- Table Navigation Tabs -->
+                <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-3 mb-4">
+                    <button onclick="switchTableTab('tab-plan')" id="btn-tab-plan" class="px-4 py-2 text-xs font-bold rounded-lg transition bg-brand-600 text-white shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-list-check"></i> 1. Үйл ажиллагаа
+                    </button>
+                    <button onclick="switchTableTab('tab-crm')" id="btn-tab-crm" class="px-4 py-2 text-xs font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-handshake"></i> 2. Спонсорын CRM
+                    </button>
+                    <button onclick="switchTableTab('tab-content')" id="btn-tab-content" class="px-4 py-2 text-xs font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days"></i> 3. Контент
+                    </button>
+                    <button onclick="switchTableTab('tab-kpi')" id="btn-tab-kpi" class="px-4 py-2 text-xs font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line"></i> 4. KPI хяналт
+                    </button>
+                    <button onclick="switchTableTab('tab-budget')" id="btn-tab-budget" class="px-4 py-2 text-xs font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> 5. Төсөв, Санхүү
+                    </button>
+                </div>
+
+                <!-- 1. ҮЙЛ АЖИЛЛАГААНЫ ТӨЛӨВЛӨГӨӨ -->
+                <div id="tab-plan" class="table-content-pane">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm sm:text-base font-bold text-emerald-900 flex items-center gap-2">
+                            <i class="fa-solid fa-file-lines text-emerald-600"></i> ҮЙЛ АЖИЛЛАГААНЫ ТӨЛӨВЛӨГӨӨ
+                        </h3>
+                        <span class="text-xs text-slate-500 font-medium">9 үе шат</span>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                        <table class="w-full text-left border-collapse bg-white">
+                            <thead>
+                                <tr>
+                                    <th class="sheet-th text-center" style="width: 50px;">Д/д</th>
+                                    <th class="sheet-th">Ажил / Үе шат</th>
+                                    <th class="sheet-th">Хариуцах</th>
+                                    <th class="sheet-th">Эхлэх огноо</th>
+                                    <th class="sheet-th">Дуусах огноо</th>
+                                    <th class="sheet-th">Хүлээгдэж буй үр дүн</th>
+                                    <th class="sheet-th">Төлөв</th>
+                                    <th class="sheet-th">Тэмдэглэл</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">1</td>
+                                    <td class="sheet-td font-semibold">Спонсор байгууллагуудын урт жагсаалт (Lead list) гаргах</td>
+                                    <td class="sheet-td">Маркетер</td>
+                                    <td class="sheet-td">2026-09-25</td>
+                                    <td class="sheet-td">2026-09-27</td>
+                                    <td class="sheet-td">30+ зорилтот компани</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">Хийгдэж байна</span></td>
+                                    <td class="sheet-td text-slate-500">FMCG, Банк, Үүрэн холбоо, ШТС г.м</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">2</td>
+                                    <td class="sheet-td font-semibold">Спонсорын санал хүргүүлэх, утсаар ярих</td>
+                                    <td class="sheet-td">Маркетер</td>
+                                    <td class="sheet-td">2026-09-28</td>
+                                    <td class="sheet-td">2026-10-05</td>
+                                    <td class="sheet-td">10+ компанитай уулзалт товлох</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td text-slate-500">Имэйл болон танилцуулга хүргэх</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">3</td>
+                                    <td class="sheet-td font-semibold">Спонсор компаниудтай биечлэн уулзах, гэрээлэх</td>
+                                    <td class="sheet-td">Маркетер / Баг</td>
+                                    <td class="sheet-td">2026-10-01</td>
+                                    <td class="sheet-td">2026-10-15</td>
+                                    <td class="sheet-td">Gold/Silver/Bronze гэрээнүүд</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td text-slate-500">Нийт 35 сая₮ босгох</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">4</td>
+                                    <td class="sheet-td font-semibold">Кино багуудын бүртгэл, эхний 2 ангийг хүлээн авах</td>
+                                    <td class="sheet-td">Төслийн баг</td>
+                                    <td class="sheet-td">2026-09-25</td>
+                                    <td class="sheet-td">2026-09-30</td>
+                                    <td class="sheet-td">40 кино багийн эхний бүтээлүүд</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">Хийгдэж байна</span></td>
+                                    <td class="sheet-td text-slate-500">20 баг бэлэн, үлдэгдлийг татах</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">5</td>
+                                    <td class="sheet-td font-semibold">Спонсоруудын бүтээгдэхүүнийг зохиолд уялдуулах</td>
+                                    <td class="sheet-td">Маркетер / Найруулагчид</td>
+                                    <td class="sheet-td">2026-10-01</td>
+                                    <td class="sheet-td">2026-10-10</td>
+                                    <td class="sheet-td">Product Placement төлөвлөгөө</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td text-slate-500">Багуудын удирдамжинд бүтээгдэхүүн суулгах</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">6</td>
+                                    <td class="sheet-td font-semibold">Сошиал цацалт эхлүүлэх (Өдөр бүр)</td>
+                                    <td class="sheet-td">Маркетер</td>
+                                    <td class="sheet-td">2026-10-01</td>
+                                    <td class="sheet-td">2026-11-01</td>
+                                    <td class="sheet-td">Өдөрт 200,000 үзэлт цуглуулах</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td text-slate-500">FB 3 хуудас (198K), IG (19.3K) дээр зэрэг тавих</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">7</td>
+                                    <td class="sheet-td font-semibold">Долоо хоног бүрийн шилдэг кино шалгаруулалт</td>
+                                    <td class="sheet-td">Шүүгчид / Маркетер</td>
+                                    <td class="sheet-td">2026-10-01</td>
+                                    <td class="sheet-td">2026-11-01</td>
+                                    <td class="sheet-td">8 шилдэг бүтээл, сошиал сэдэв</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td text-slate-500">Хэрэглэгчдийн санал асуулга</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">8</td>
+                                    <td class="sheet-td font-semibold">Апп таталт & Үзэлтийн хөрвүүлэлт хийх</td>
+                                    <td class="sheet-td">Маркетер</td>
+                                    <td class="sheet-td">2026-10-01</td>
+                                    <td class="sheet-td">2026-11-01</td>
+                                    <td class="sheet-td">SEE MEDIA апп таталт өсөх</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td text-slate-500">3-р ангиас эхлэн апп-аар үзэх CTA байршуулах</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">9</td>
+                                    <td class="sheet-td font-semibold">Гранпри шалгаруулалт & Төгсгөлийн эвент</td>
+                                    <td class="sheet-td">Бүх баг</td>
+                                    <td class="sheet-td">2026-11-01</td>
+                                    <td class="sheet-td">2026-11-05</td>
+                                    <td class="sheet-td">30,000,000₮ шагналын эзэн тодрох</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td text-slate-500">Хэвлэл мэдээлэл, хаалтын тайлан</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. СПОНСОР БАЙГУУЛЛАГУУДТАЙ ХАРИЛЦАХ ХЯНАЛТЫН ХҮСНЭГТ -->
+                <div id="tab-crm" class="table-content-pane hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm sm:text-base font-bold text-emerald-900 flex items-center gap-2">
+                            <i class="fa-solid fa-users-viewfinder text-emerald-600"></i> СПОНСОР ХАРИЛЦАХ ХЯНАЛТ (CRM)
+                        </h3>
+                        <span class="text-xs text-slate-500 font-medium">9 Зорилтот байгууллага</span>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                        <table class="w-full text-left border-collapse bg-white">
+                            <thead>
+                                <tr>
+                                    <th class="sheet-th text-center" style="width: 45px;">Д/д</th>
+                                    <th class="sheet-th">Компанийн нэр</th>
+                                    <th class="sheet-th">Салбар</th>
+                                    <th class="sheet-th">Санал болгох багц</th>
+                                    <th class="sheet-th">Үнийн дүн (₮)</th>
+                                    <th class="sheet-th">Холбогдох албан тушаалтан</th>
+                                    <th class="sheet-th">Утас / Имэйл</th>
+                                    <th class="sheet-th">Хүсэлт илгээсэн огноо</th>
+                                    <th class="sheet-th">Уулзалтын огноо</th>
+                                    <th class="sheet-th">Одоогийн төлөв</th>
+                                    <th class="sheet-th">Тэмдэглэл</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">1</td>
+                                    <td class="sheet-td font-bold text-slate-900">CU Mongolia</td>
+                                    <td class="sheet-td">Конвениенс сүлжээ</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[11px]">Gold</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">20,000,000</td>
+                                    <td class="sheet-td">Маркетингийн алба</td>
+                                    <td class="sheet-td">marketing@cumongolia.mn</td>
+                                    <td class="sheet-td">2026-09-26</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">Имэйл илгээх</span></td>
+                                    <td class="sheet-td text-slate-500">Кино бүрт салбар дэлгүүр, бүтээгдэхүүн байршуулах</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">2</td>
+                                    <td class="sheet-td font-bold text-slate-900">GS25 Mongolia</td>
+                                    <td class="sheet-td">Конвениенс сүлжээ</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[11px]">Gold</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">20,000,000</td>
+                                    <td class="sheet-td">Брэнд менежер</td>
+                                    <td class="sheet-td">brand@gs25.mn</td>
+                                    <td class="sheet-td">2026-09-26</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">Имэйл илгээх</span></td>
+                                    <td class="sheet-td text-slate-500">CU-тэй өрсөлдөгч санал танилцуулах</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">3</td>
+                                    <td class="sheet-td font-bold text-slate-900">Unitel Group</td>
+                                    <td class="sheet-td">Харилцаа холбоо</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[11px]">Gold</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">20,000,000</td>
+                                    <td class="sheet-td">Маркетингийн захирал</td>
+                                    <td class="sheet-td">info@unitel.mn</td>
+                                    <td class="sheet-td">2026-09-27</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Хүлээгдэж буй</span></td>
+                                    <td class="sheet-td text-slate-500">Дата багц, залуусын брэндтэй уялдуулах</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">4</td>
+                                    <td class="sheet-td font-bold text-slate-900">Mobicom Corporation</td>
+                                    <td class="sheet-td">Харилцаа холбоо</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[11px]">Gold</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">20,000,000</td>
+                                    <td class="sheet-td">PR менежер</td>
+                                    <td class="sheet-td">contact@mobicom.mn</td>
+                                    <td class="sheet-td">2026-09-27</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Хүлээгдэж буй</span></td>
+                                    <td class="sheet-td text-slate-500">Voo / Сошиал уялдуулах боломж</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">5</td>
+                                    <td class="sheet-td font-bold text-slate-900">Хаан Банк</td>
+                                    <td class="sheet-td">Банк санхүү</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[11px]">Gold</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">20,000,000</td>
+                                    <td class="sheet-td">Дижитал маркетинг</td>
+                                    <td class="sheet-td">marketing@khanbank.com</td>
+                                    <td class="sheet-td">2026-09-28</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Хүлээгдэж буй</span></td>
+                                    <td class="sheet-td text-slate-500">Khaan Pay, залуусын дижитал карт</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">6</td>
+                                    <td class="sheet-td font-bold text-slate-900">Gobi Cashmere</td>
+                                    <td class="sheet-td">Хувцас загвар</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-bold text-[11px]">Silver</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">10,000,000</td>
+                                    <td class="sheet-td">PR менежер</td>
+                                    <td class="sheet-td">marketing@gobi.mn</td>
+                                    <td class="sheet-td">2026-09-28</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Хүлээгдэж буй</span></td>
+                                    <td class="sheet-td text-slate-500">Дүрүүдийн хувцаслалт дээр хамтрах</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">7</td>
+                                    <td class="sheet-td font-bold text-slate-900">АПУ ХК (Ундаа)</td>
+                                    <td class="sheet-td">FMCG</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-bold text-[11px]">Silver</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">10,000,000</td>
+                                    <td class="sheet-td">Брэнд менежер</td>
+                                    <td class="sheet-td">brand@apu.mn</td>
+                                    <td class="sheet-td">2026-09-29</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Хүлээгдэж буй</span></td>
+                                    <td class="sheet-td text-slate-500">Frutea, сэнгүр г.м залуусын ундаа</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">8</td>
+                                    <td class="sheet-td font-bold text-slate-900">TomYo EdTech</td>
+                                    <td class="sheet-td">Боловсрол / Апп</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold text-[11px]">Bronze</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">5,000,000</td>
+                                    <td class="sheet-td">Хамтын ажиллагаа</td>
+                                    <td class="sheet-td">partnership@tomyo.mn</td>
+                                    <td class="sheet-td">2026-09-29</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Хүлээгдэж буй</span></td>
+                                    <td class="sheet-td text-slate-500">Апп доторх сурталчилгаа, залуус</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td text-center font-bold">9</td>
+                                    <td class="sheet-td font-bold text-slate-900">Shoppy.mn</td>
+                                    <td class="sheet-td">И-коммерс</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold text-[11px]">Bronze</span></td>
+                                    <td class="sheet-td font-semibold text-slate-800">5,000,000</td>
+                                    <td class="sheet-td">Маркетер</td>
+                                    <td class="sheet-td">marketing@shoppy.mn</td>
+                                    <td class="sheet-td">2026-09-30</td>
+                                    <td class="sheet-td text-slate-400">-</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Хүлээгдэж буй</span></td>
+                                    <td class="sheet-td text-slate-500">Баннер сурталчилгаа</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. СОШИАЛ СУВГУУДЫН КОНТЕНТ ХУВААРИЛАЛТ -->
+                <div id="tab-content" class="table-content-pane hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm sm:text-base font-bold text-emerald-900 flex items-center gap-2">
+                            <i class="fa-solid fa-film text-emerald-600"></i> КОНТЕНТ ХУВААРИЛАЛТ
+                        </h3>
+                        <span class="text-xs text-slate-500 font-medium">Эхний 7 хоногийн загвар</span>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                        <table class="w-full text-left border-collapse bg-white">
+                            <thead>
+                                <tr>
+                                    <th class="sheet-th">Огноо</th>
+                                    <th class="sheet-th">Гарах гараг</th>
+                                    <th class="sheet-th">Нийтлэх суваг</th>
+                                    <th class="sheet-th">Контентын төрөл</th>
+                                    <th class="sheet-th">Кино / Сэдэв</th>
+                                    <th class="sheet-th">Тайлбар / Hook</th>
+                                    <th class="sheet-th">CTA (Үйлдлийн уриалга)</th>
+                                    <th class="sheet-th">Спонсор харуулалт</th>
+                                    <th class="sheet-th">Төлөв</th>
+                                    <th class="sheet-th">Үзэлт (Бодит)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="sheet-td font-semibold">2026-10-01</td>
+                                    <td class="sheet-td">Пүрэв</td>
+                                    <td class="sheet-td">FB (3 хуудас) + IG</td>
+                                    <td class="sheet-td font-medium text-slate-800">Рийл (Анги 1)</td>
+                                    <td class="sheet-td">Кино #1 (Гэмт хэрэг)</td>
+                                    <td class="sheet-td">Энэ залуу яагаад баригдав? Сэтгэл хөдөлгөм...</td>
+                                    <td class="sheet-td">2-р ангийг маргааш үзээрэй!</td>
+                                    <td class="sheet-td text-amber-700 font-semibold">Gold спонсор бүтээгдэхүүн</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td font-bold text-slate-400">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">2026-10-02</td>
+                                    <td class="sheet-td">Баасан</td>
+                                    <td class="sheet-td">FB + IG</td>
+                                    <td class="sheet-td font-medium text-slate-800">Рийл (Анги 2)</td>
+                                    <td class="sheet-td">Кино #1 (Үргэлжлэл)</td>
+                                    <td class="sheet-td">Хүлээгдээгүй эргэлт гарлаа!</td>
+                                    <td class="sheet-td font-semibold text-emerald-700">Бүтэн ангийг SEE MEDIA апп-аас үзээрэй</td>
+                                    <td class="sheet-td text-amber-700 font-semibold">Gold спонсор</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td font-bold text-slate-400">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">2026-10-03</td>
+                                    <td class="sheet-td">Бямба</td>
+                                    <td class="sheet-td">FB + IG Story</td>
+                                    <td class="sheet-td font-medium text-slate-800">Постер / Зураг</td>
+                                    <td class="sheet-td">Тэмцээний мэдээлэл</td>
+                                    <td class="sheet-td">Энэ долоо хоногийн шилдэг кинонд санал өгөх</td>
+                                    <td class="sheet-td">Сэтгэгдэл үлдээх</td>
+                                    <td class="sheet-td text-slate-600">Silver спонсор лого</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td font-bold text-slate-400">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">2026-10-04</td>
+                                    <td class="sheet-td">Ням</td>
+                                    <td class="sheet-td">FB Reels + IG</td>
+                                    <td class="sheet-td font-medium text-slate-800">BTS (Арын алба)</td>
+                                    <td class="sheet-td">Зураг авалтын алдаанууд</td>
+                                    <td class="sheet-td">Зураг авалтын хөгжилтэй агшнууд</td>
+                                    <td class="sheet-td">SEE MEDIA дагах</td>
+                                    <td class="sheet-td text-slate-600">Бүтээгдэхүүн байршуулалт</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td font-bold text-slate-400">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">2026-10-05</td>
+                                    <td class="sheet-td">Даваа</td>
+                                    <td class="sheet-td">FB (3 хуудас) + IG</td>
+                                    <td class="sheet-td font-medium text-slate-800">Рийл (Анги 1)</td>
+                                    <td class="sheet-td">Кино #2 (Драма / Хайр)</td>
+                                    <td class="sheet-td">Тэр 2 уулзаж чадах уу?</td>
+                                    <td class="sheet-td">Маргааш үргэлжилнэ...</td>
+                                    <td class="sheet-td text-orange-700">Bronze спонсор</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td font-bold text-slate-400">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">2026-10-06</td>
+                                    <td class="sheet-td">Мягмар</td>
+                                    <td class="sheet-td">FB + IG</td>
+                                    <td class="sheet-td font-medium text-slate-800">Рийл (Анги 2)</td>
+                                    <td class="sheet-td">Кино #2 (Үргэлжлэл)</td>
+                                    <td class="sheet-td">Бодит түүхээс сэдэвлэв</td>
+                                    <td class="sheet-td font-semibold text-emerald-700">Апп татах линк (Bio дээр)</td>
+                                    <td class="sheet-td text-orange-700">Bronze спонсор</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td font-bold text-slate-400">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">2026-10-07</td>
+                                    <td class="sheet-td">Лхагва</td>
+                                    <td class="sheet-td">FB Live / Пост</td>
+                                    <td class="sheet-td font-medium text-slate-800">Шалгаруулалт</td>
+                                    <td class="sheet-td">7 хоногийн Шилдэг Кино зарлах</td>
+                                    <td class="sheet-td">1-р долоо хоногийн ялагч кино тодорлоо</td>
+                                    <td class="sheet-td">Багуудад баяр хүргэх</td>
+                                    <td class="sheet-td text-slate-800 font-bold">Бүх спонсорууд</td>
+                                    <td class="sheet-td"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">Төлөвлөсөн</span></td>
+                                    <td class="sheet-td font-bold text-slate-400">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4. ТӨСЛИЙН ЗОРИЛТОТ ҮЗҮҮЛЭЛТ (KPI) БА САНХҮҮГИЙН ТООЦОО -->
+                <div id="tab-kpi" class="table-content-pane hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm sm:text-base font-bold text-emerald-900 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-emerald-600"></i> ТӨСЛИЙН ЗОРИЛТОТ ҮЗҮҮЛЭЛТ (KPI)
+                        </h3>
+                        <span class="text-xs text-slate-500 font-medium">Хяналт</span>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                        <table class="w-full text-left border-collapse bg-white">
+                            <thead>
+                                <tr>
+                                    <th class="sheet-th">Үзүүлэлт / Ангилал</th>
+                                    <th class="sheet-th">Төлөвлөсөн зорилт</th>
+                                    <th class="sheet-th">Бодит биелэлт</th>
+                                    <th class="sheet-th">Хувь (%)</th>
+                                    <th class="sheet-th">Тайлбар</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="sheet-td font-semibold">Нийт үзэлт (8 долоо хоногт)</td>
+                                    <td class="sheet-td font-bold">10,000,000</td>
+                                    <td class="sheet-td">0</td>
+                                    <td class="sheet-td font-bold text-slate-500">0.0%</td>
+                                    <td class="sheet-td text-slate-600">FB 3 хуудас (198K), IG (19.3K) сувгуудаар хүрэх нийт үзэлт</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">Өдрийн дундаж үзэлт</td>
+                                    <td class="sheet-td font-bold">200,000</td>
+                                    <td class="sheet-td">0</td>
+                                    <td class="sheet-td font-bold text-slate-500">0.0%</td>
+                                    <td class="sheet-td text-slate-600">Өдөрт 1 шинэ кино цацах үеийн зорилт (Одоогийн сошиал дундаж 100K)</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">Оролцогч киноны тоо</td>
+                                    <td class="sheet-td font-bold">40</td>
+                                    <td class="sheet-td">20</td>
+                                    <td class="sheet-td font-bold text-emerald-600">50.0%</td>
+                                    <td class="sheet-td text-slate-600">Одоогоор 20 баг анкет өгсөн, 40 кино болгох</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">Үнэгүй цацах рийлийн тоо</td>
+                                    <td class="sheet-td font-bold">80</td>
+                                    <td class="sheet-td">0</td>
+                                    <td class="sheet-td font-bold text-slate-500">0.0%</td>
+                                    <td class="sheet-td text-slate-600">40 кино тус бүрийн эхний 2 анги</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-semibold">SEE MEDIA Апп таталт (Шинэ)</td>
+                                    <td class="sheet-td font-bold">50,000</td>
+                                    <td class="sheet-td">0</td>
+                                    <td class="sheet-td font-bold text-slate-500">0.0%</td>
+                                    <td class="sheet-td text-slate-600">3-р ангиас эхлэн апп руу татах зорилт</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5. ТӨСӨВ БА САНХҮҮГИЙН ТӨЛӨВЛӨГӨӨ -->
+                <div id="tab-budget" class="table-content-pane hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm sm:text-base font-bold text-emerald-900 flex items-center gap-2">
+                            <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> ТӨСӨВ, САНХҮҮГИЙН ТӨЛӨВЛӨГӨӨ
+                        </h3>
+                        <span class="text-xs text-slate-500 font-medium">Шагналын задаргаа ба Зардал</span>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                        <table class="w-full text-left border-collapse bg-white">
+                            <thead>
+                                <tr>
+                                    <th class="sheet-th">Төрөл</th>
+                                    <th class="sheet-th">Зүйлийн нэр</th>
+                                    <th class="sheet-th">Дүн (₮)</th>
+                                    <th class="sheet-th">Тайлбар / Задаргаа</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Орлого -->
+                                <tr class="bg-emerald-50/50">
+                                    <td class="sheet-td font-semibold text-emerald-700">Орлого</td>
+                                    <td class="sheet-td font-bold">Спонсорын орлого (Зорилтот)</td>
+                                    <td class="sheet-td font-bold text-emerald-700">35,000,000₮</td>
+                                    <td class="sheet-td text-slate-500">Gold (20M), Silver (10M), Bronze (5M) багцуудын нийлбэр</td>
+                                </tr>
+                                
+                                <!-- Шагналын Сан -->
+                                <tr>
+                                    <td class="sheet-td font-semibold text-rose-700" rowspan="3">Зарлага (Шагналын сан)</td>
+                                    <td class="sheet-td font-bold">1-р байр / Гранпри шагнал</td>
+                                    <td class="sheet-td font-bold text-slate-900">15,000,000₮</td>
+                                    <td class="sheet-td text-slate-600">Шүүгчдийн болон үзэгчдийн үнэлгээгээр шалгарсан 1 багт</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-bold">7 хоног бүрийн шилдэг кино</td>
+                                    <td class="sheet-td font-bold text-slate-900">8,000,000₮</td>
+                                    <td class="sheet-td text-slate-600">Нийт 8 долоо хоног. Долоо хоног бүр шалгарсан 1 багт 1,000,000₮</td>
+                                </tr>
+                                <tr>
+                                    <td class="sheet-td font-bold">Дэд байр болон Тусгай шагналууд</td>
+                                    <td class="sheet-td font-bold text-slate-900">7,000,000₮</td>
+                                    <td class="sheet-td text-slate-600">Шилдэг найруулагч, жүжигчин, зураглаач, дэд байр (Нийт шагналын сан 30 сая₮)</td>
+                                </tr>
+                                
+                                <!-- Бусад Зардал -->
+                                <tr>
+                                    <td class="sheet-td font-semibold text-rose-700">Зарлага (Үйл ажиллагаа)</td>
+                                    <td class="sheet-td font-bold">Маркетинг, Boost төсөв</td>
+                                    <td class="sheet-td font-bold text-slate-900">5,000,000₮</td>
+                                    <td class="sheet-td text-slate-600">Сошиал сурталчилгаа (Retargeting ads), хаалтын арга хэмжээний зардал</td>
+                                </tr>
+                                
+                                <!-- Нийт -->
+                                <tr class="bg-slate-100 border-t-2 border-slate-300">
+                                    <td class="sheet-td font-bold text-slate-800" colspan="2">НИЙТ ЗАРДАЛ</td>
+                                    <td class="sheet-td font-black text-rose-700 text-lg">35,000,000₮</td>
+                                    <td class="sheet-td font-medium text-slate-600">Спонсорын орлогоор бүрэн нөхөх хувилбар</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 3: DYNAMIC TIMELINE -->
+        <section id="timeline" class="space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 text-brand-600 font-bold text-xs uppercase tracking-wider mb-1">
+                            <i class="fa-regular fa-calendar-check"></i> Хэрэгжилтийн Хуваарь (09/24 - 11/01)
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">7 Хоног Бүр Нарийвчилсан Маркетингийн Төлөвлөгөө</h2>
+                        <p class="text-xs sm:text-sm text-slate-500">Долоо хоног бүрийн товчлуур дээр дарж тухайн хугацаанд хийгдэх ажлуудыг харна уу.</p>
+                    </div>
+
+                    <!-- Timeline Nav Pills -->
+                    <div class="flex items-center space-x-1 bg-slate-100 p-1.5 rounded-xl overflow-x-auto custom-scrollbar max-w-full">
+                        <button onclick="switchWeek(1)" id="wTab-1" class="px-3 py-1.5 text-xs font-bold rounded-lg transition bg-brand-600 text-white shadow-sm">7 хоног 1 (9/24-30)</button>
+                        <button onclick="switchWeek(2)" id="wTab-2" class="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition">7 хоног 2 (10/1-7)</button>
+                        <button onclick="switchWeek(3)" id="wTab-3" class="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition">7 хоног 3 (10/8-14)</button>
+                        <button onclick="switchWeek(4)" id="wTab-4" class="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition">7 хоног 4 (10/15-21)</button>
+                        <button onclick="switchWeek(5)" id="wTab-5" class="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition">7 хоног 5 (10/22-31)</button>
+                        <button onclick="switchWeek(6)" id="wTab-6" class="px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition">ФИНАЛ (11/1)</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Content Box -->
+                <div id="weekContentBox" class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: SPONSORSHIP PACKAGES -->
+        <section id="sponsors" class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-brand-600 font-bold text-xs uppercase tracking-wider">B2B Үнэ Цэн & Ивээн Тэтгэгчид</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Ивээн Тэтгэгчийн Багцууд ба Удирдамжийн Зохицуулалт</h2>
+                <p class="text-xs sm:text-sm text-slate-500">
+                    SEE MEDIA нь киног өөрөө хийдэггүй ОТТ платформ тул спонсорын бүтээгдэхүүнийг <strong>20 багт олгох албан ёсны удирдамжинд</strong> дүр, үйл явдалд шингээх шаардлага болгон тусгаж өгнө.
+                </p>
+            </div>
+
+            <!-- Sponsor Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- GOLD TIER -->
+                <div class="bg-gradient-to-b from-amber-50 to-white rounded-2xl border-2 border-amber-300 p-6 shadow-md relative flex flex-col justify-between">
+                    <div class="absolute -top-3 right-6 bg-amber-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-sm">
+                        Хамгийн Өндөр Өгөөж
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-2xl shadow-inner">
+                                🥇
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900">GOLD Багц</h3>
+                                <span class="text-2xl font-black text-amber-600">20,000,000₮</span>
+                            </div>
+                        </div>
+                        <ul class="space-y-3 text-xs sm:text-sm text-slate-700 mb-6">
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-amber-500 mt-1 mr-2"></i> <span><strong>Бүх 20 багийн удирдамжинд</strong> танай бүтээгдэхүүнийг заавал киноны гол үзэгдэлд оруулах даалгавар өгнө.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-amber-500 mt-1 mr-2"></i> <span><strong>40 Сошиал Рийлд</strong> лого болон бүтээгдэхүүний харагдац, FB 3 пэйж (198K), IG (19.3K)-аар цацагдана.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-amber-500 mt-1 mr-2"></i> <span>SEE MEDIA App-ын Reel цэсний нүүрэнд <strong>Үндсэн Banner байршуулах</strong>.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-amber-500 mt-1 mr-2"></i> <span>App доторх цувралуудын эхлэлд <strong>5 секундын Pre-roll реклам</strong>.</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-amber-100/70 p-3 rounded-xl border border-amber-200 text-xs text-amber-900 font-medium">
+                        <i class="fa-solid fa-star text-amber-600 mr-1"></i> Хүрэх тооцоолол: <strong>5,000,000+ Үзэлт</strong> ба Апп доторх өндөр давтамжит харагдац.
+                    </div>
+                </div>
+
+                <!-- SILVER TIER -->
+                <div class="bg-gradient-to-b from-slate-100 to-white rounded-2xl border border-slate-300 p-6 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-2xl shadow-inner">
+                                🥈
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900">SILVER Багц</h3>
+                                <span class="text-2xl font-black text-slate-700">10,000,000₮</span>
+                            </div>
+                        </div>
+                        <ul class="space-y-3 text-xs sm:text-sm text-slate-700 mb-6">
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-slate-500 mt-1 mr-2"></i> <span><strong>10 багийн кинонд</strong> бүтээгдэхүүн байршуулах албан ёсны удирдамж.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-slate-500 mt-1 mr-2"></i> <span><strong>20 Сошиал Рийлд</strong> лого болон бүтээгдэхүүний харагдац.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-slate-500 mt-1 mr-2"></i> <span>SEE MEDIA App дотор баннер байршуулалт.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-slate-500 mt-1 mr-2"></i> <span>Сошиал сувгаар хамтарсан Mention / Талархал.</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-100 p-3 rounded-xl border border-slate-200 text-xs text-slate-700 font-medium">
+                        <i class="fa-solid fa-bullhorn text-slate-600 mr-1"></i> Хүрэх тооцоолол: <strong>2,500,000+ Үзэлт</strong>.
+                    </div>
+                </div>
+
+                <!-- BRONZE TIER -->
+                <div class="bg-gradient-to-b from-orange-50 to-white rounded-2xl border border-orange-200 p-6 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-2xl shadow-inner">
+                                🥉
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900">BRONZE Багц</h3>
+                                <span class="text-2xl font-black text-orange-600">5,000,000₮</span>
+                            </div>
+                        </div>
+                        <ul class="space-y-3 text-xs sm:text-sm text-slate-700 mb-6">
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-orange-500 mt-1 mr-2"></i> <span><strong>5 Сошиал Рийлд</strong> лого болон спонсор харагдац.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-orange-500 mt-1 mr-2"></i> <span>SEE MEDIA App дотор сурталчилгааны баннер байршуулах.</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-circle-check text-orange-500 mt-1 mr-2"></i> <span>Төгсгөлийн шагнал гардуулах арга хэмжээнд лого харуулах.</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-orange-100/50 p-3 rounded-xl border border-orange-200 text-xs text-orange-900 font-medium">
+                        <i class="fa-solid fa-eye text-orange-600 mr-1"></i> Хүрэх тооцоолол: <strong>800,000+ Үзэлт</strong>.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: PERFORMANCE FORECASTING & ROI CALCULATOR -->
+        <section id="calculator" class="space-y-6 mb-12">
+            <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
+                <div class="max-w-2xl mb-8">
+                    <span class="text-brand-400 font-bold text-xs uppercase tracking-wider">Интерактив Тооцоолуур</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Үзэлт & Апп Таталт, Орлогын Тооцоолуур</h2>
+                    <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                        Өдөрт цацах киноны тоо болон маркетинг боост төсвөөс хамаарч 10 сая үзэлт, шинэ хэрэглэгчдийн таталтыг урьдчилан тооцоолоорой.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <!-- Calculator Sliders -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <!-- Slider 1 -->
+                        <div>
+                            <div class="flex justify-between items-center text-sm font-semibold mb-2">
+                                <span>Өдөрт нийтлэгдэх Рийл киноны тоо:</span>
+                                <span id="reelVal" class="text-brand-400 font-bold text-lg">1 Рийл / өдөр</span>
+                            </div>
+                            <input type="range" id="reelSlider" min="1" max="5" value="1" step="1" oninput="updateCalculator()" class="w-full accent-brand-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                                <span>1 Рийл</span>
+                                <span>3 Рийл</span>
+                                <span>5 Рийл</span>
+                            </div>
+                        </div>
+
+                        <!-- Slider 2 -->
+                        <div>
+                            <div class="flex justify-between items-center text-sm font-semibold mb-2">
+                                <span>Маркетингийн Боост Төсөв:</span>
+                                <span id="budgetVal" class="text-brand-400 font-bold text-lg">5.0M₮</span>
+                            </div>
+                            <input type="range" id="budgetSlider" min="1000000" max="20000000" value="5000000" step="1000000" oninput="updateCalculator()" class="w-full accent-brand-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                                <span>1M₮</span>
+                                <span>10M₮</span>
+                                <span>20M₮</span>
+                            </div>
+                        </div>
+
+                        <!-- Slider 3 -->
+                        <div>
+                            <div class="flex justify-between items-center text-sm font-semibold mb-2">
+                                <span>Үнэгүй ангиас Апп Таталт руу хөрвүүлэлт (%):</span>
+                                <span id="convVal" class="text-brand-400 font-bold text-lg">1.5%</span>
+                            </div>
+                            <input type="range" id="convSlider" min="0.5" max="5" value="1.5" step="0.5" oninput="updateCalculator()" class="w-full accent-brand-500 bg-slate-700 h-2 rounded-lg cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                                <span>0.5% (Болгоомжтой)</span>
+                                <span>2.5% (Дундаж)</span>
+                                <span>5.0% (Өндөр)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculated Output Card -->
+                    <div class="lg:col-span-5 bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 space-y-4">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 border-b border-white/10 pb-2">Таамаглаж буй Үр Дүн (Төслийн хугацаанд)</h4>
+                        
+                        <div>
+                            <span class="text-xs text-slate-400 block">Нийт Хуримтлагдах Үзэлт:</span>
+                            <span id="resViews" class="text-2xl sm:text-3xl font-black text-white">10,000,000</span>
+                        </div>
+
+                        <div>
+                            <span class="text-xs text-slate-400 block">Шинэ Апп Таталт (Тооцоолол):</span>
+                            <span id="resInstalls" class="text-xl font-bold text-brand-300">50,000 таталт</span>
+                        </div>
+
+                        <div class="pt-2 border-t border-white/10">
+                            <span class="text-xs text-slate-400 block">Боломжит Хэрэглэгчийн Худалдан Авалт (12.9K):</span>
+                            <span id="resRevenue" class="text-xl sm:text-2xl font-black text-amber-400">129,000,000₮</span>
+                        </div>
+
+                        <p class="text-[10px] text-slate-400 pt-1 leading-relaxed">
+                            * FB хуудаснууд (198K) болон Instagram (19.3K)-ийн одоогийн дундаж үзэлт (100K)-д үндэслэн тооцов.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
+            <div class="flex items-center space-x-2">
+                <span class="font-bold text-slate-800">SEE MEDIA Application</span>
+                <span>• UB Tower, 13-1301</span>
+                <span>• +976 99481469</span>
+            </div>
+            <div>
+                <span>Seemedia684@gmail.com</span>
+                <span class="ml-2">© 2026 "Reel Film Challenge". Бүх эрх хуулиар хамгаалагдсан.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMsg');
+            msg.innerText = message;
+            toast.classList.remove('translate-y-[-150%]', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-150%]', 'opacity-0');
+            }, 3000);
+        }
+
+        function switchTableTab(tabId) {
+            const tabs = ['tab-plan', 'tab-crm', 'tab-content', 'tab-kpi', 'tab-budget'];
+            const buttons = ['btn-tab-plan', 'btn-tab-crm', 'btn-tab-content', 'btn-tab-kpi', 'btn-tab-budget'];
+            
+            tabs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.className = "px-4 py-2 text-xs font-bold rounded-lg transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center gap-2";
+                }
+            });
+
+            const activeTab = document.getElementById(tabId);
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeTab) activeTab.classList.remove('hidden');
+            if (activeBtn) activeBtn.className = "px-4 py-2 text-xs font-bold rounded-lg transition bg-brand-600 text-white shadow-sm flex items-center gap-2";
+        }
+
+        const weeklyData = {
+            1: {
+                title: "7 хоног 1: 9 сарын 24 - 9 сарын 30 (Бэлтгэл ба Спонсор Lead List)",
+                status: "Идэвхтэй байна",
+                tasks: [
+                    "Спонсор байгууллагуудын урт жагсаалт (CU, GS25, Банкууд, Үүрэн холбоо, FMCG) гаргаж албан санал илгээх.",
+                    "Бүртгүүлсэн 20 багт кино бүтээлийн удирдамжийг танилцуулж, спонсор бүтээгдэхүүнийг киноны үзэгдэлд оруулах даалгаврыг батлах.",
+                    "Facebook-ийн 3 албан хуудас (198K дагагч), Instagram (19.3K) сувгуудаар Reel Film Challenge-ийн эхлэлийг зарлах.",
+                    "SEE MEDIA стриминг апп доторх Reels цэс болон QPay төлбөрийн бэлэн байдлыг шалгах."
+                ],
+                kpi: "30+ байгууллагад санал хүргүүлэх, эхний 20 багийн анкет бэлэн болох"
+            },
+            2: {
+                title: "7 хоног 2: 10 сарын 1 - 10 сарын 7 (Сошиал Цацалт Эхлэх)",
+                status: "Төлөвлөгдсөн",
+                tasks: [
+                    "Оролцогч кинонуудын эхний 2 ангийг FB 3 хуудас (198K) болон IG (19.3K) дээр өдөр бүр үнэгүй цацаж эхлэх.",
+                    "Киноны 2-р ангийн төгсгөлд 'Үргэлжлэлийг SEE MEDIA апп-аас үзээрэй' CTA байршуулж апп таталт үүсгэх.",
+                    "Спонсор компаниудтай биечлэн уулзаж Gold/Silver гэрээ байгуулах.",
+                    "Өглөөний 07:00-09:00 болон Оройн 18:00-23:00 оргил цагуудыг ягштал баримтлах."
+                ],
+                kpi: "Өдөрт 200,000 үзэлтийн суурь тогтох, эхний спонсор гэрээ батлагдах"
+            },
+            3: {
+                title: "7 хоног 3: 10 сарын 8 - 10 сарын 14 (Тренд Үүсгэх ба Апп Хөрвүүлэлт)",
+                status: "Төлөвлөгдсөн",
+                tasks: [
+                    "Оролцогч багууд өөрсдийн сошиал хуудсаараа киноны трейлерийг шэйрлэж органик хандалтыг 2 дахин өсгөх.",
+                    "Апп дотор Gold спонсорын 5 секундийн Pre-roll болон үндсэн баннерыг байршуулах.",
+                    "Долоо хоногийн шилдэг киногоор шалгарсан бүтээлийг онцолж, жүжигчдийн хөгжилтэй алдааны бичлэг (BTS) нийтлэх.",
+                    "Апп таталтын тоо болон QPay гүйлгээний тоонд анхны үнэлгээ хийх."
+                ],
+                kpi: "Сошиалаас SEE MEDIA апп руу шилжих хөрвүүлэлт 1.5%-д хүрэх"
+            },
+            4: {
+                title: "7 хоног 4: 10 сарын 15 - 10 сарын 21 (Өрсөлдөөн ба Retargeting)",
+                status: "Төлөвлөгдсөн",
+                tasks: [
+                    "Retargeting Ads: 198K FB дагагчдаас эхний ангиудыг үзсэн боловч апп татаагүй хэрэглэгчид рүү чиглэсэн зар явуулах.",
+                    "Одоогоор хамгийн өндөр үнэлгээтэй яваа ТОП 5 киног зарлаж өрсөлдөөнийг ширүүсгэх.",
+                    "Удирдамжийн дагуу бүтээгдэхүүнээ хамгийн сайн шингээсэн багийг онцлох контент хийх.",
+                    "Bronze, Silver спонсоруудын тайлангийн завсрын тоог нэгтгэх."
+                ],
+                kpi: "Нийт хуримтлагдсан үзэлт 5 саяд хүрэх"
+            },
+            5: {
+                title: "7 хоног 5: 10 сарын 22 - 10 сарын 31 (Санал Хураалт ба Финалын Хүлээлт)",
+                status: "Төлөвлөгдсөн",
+                tasks: [
+                    "SEE MEDIA апп дотор хэрэглэгчдийн дунд 'Үзэгчдийн таашаалт кино' санал хураалт явуулах (Аппын идэвх дээд цэгт хүрнэ).",
+                    "Финалын 30 сая төгрөгийн Гранпри эзнийг шалгаруулах эвентийн бэлтгэл хангаж хэвлэлийн мэдээ илгээх.",
+                    "Найруулагч, жүжигчидтэй Facebook Live хийх.",
+                    "Бүх спонсор байгууллагуудад урилга хүргүүлэх."
+                ],
+                kpi: "App Daily Active Users (DAU) дээд цэгт хүрэх"
+            },
+            6: {
+                title: "ФИНАЛ: 11 сарын 1 (30 Сая Төгрөгийн Эзэн Шалгарах)",
+                status: "Төгсгөлийн Арга Хэмжээ",
+                tasks: [
+                    "30,000,000₮ шагналын эзнийг тодруулах ёслолын ажиллагааг 3 хуудсаараа зэрэг шууд дамжуулах (Live Stream).",
+                    "Шууд дамжуулалтын үеэр бүх спонсоруудад талархал илэрхийлж тайзан дээр алдаршуулах.",
+                    "Ялагч кинонуудыг SEE MEDIA апп дээр бүрэн эхээр нь онцлох цэсэнд байршуулах.",
+                    "Төслийн нэгдсэн тайлан болон үзэлтийн тайланг спонсоруудад хүргүүлэх."
+                ],
+                kpi: "10,000,000 үзэлтийн зорилт биелэх, төслийг амжилттай хаах"
+            }
+        };
+
+        function switchWeek(weekNum) {
+            for (let i = 1; i <= 6; i++) {
+                const tab = document.getElementById(`wTab-${i}`);
+                if (tab) {
+                    if (i === weekNum) {
+                        tab.className = "px-3 py-1.5 text-xs font-bold rounded-lg transition bg-brand-600 text-white shadow-sm";
+                    } else {
+                        tab.className = "px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 rounded-lg transition";
+                    }
+                }
+            }
+
+            const data = weeklyData[weekNum];
+            const box = document.getElementById('weekContentBox');
+            let tasksHTML = data.tasks.map(t => `<li class="flex items-start"><i class="fa-solid fa-check text-brand-600 mt-1 mr-2 text-xs"></i><span>${t}</span></li>`).join('');
+
+            box.innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-slate-200 pb-3">
+                    <h3 class="text-base font-bold text-slate-900">${data.title}</h3>
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${weekNum === 6 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
+                        ${data.status}
+                    </span>
+                </div>
+                <div class="space-y-4 text-xs sm:text-sm text-slate-700">
+                    <p class="font-semibold text-slate-900">Энэ 7 хоногийн гол даалгаврууд:</p>
+                    <ul class="space-y-2">
+                        ${tasksHTML}
+                    </ul>
+                    <div class="pt-3 border-t border-slate-200 text-xs font-medium text-slate-500 flex items-center">
+                        <i class="fa-solid fa-bullseye text-brand-600 mr-2"></i>
+                        <span>Зорилтот үр дүн: <strong class="text-slate-800">${data.kpi}</strong></span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateCalculator() {
+            const reelsPerDay = parseInt(document.getElementById('reelSlider').value);
+            const budget = parseInt(document.getElementById('budgetSlider').value);
+            const convRate = parseFloat(document.getElementById('convSlider').value);
+
+            document.getElementById('reelVal').innerText = `${reelsPerDay} Рийл / өдөр`;
+            document.getElementById('budgetVal').innerText = `${(budget / 1000000).toFixed(1)}M₮`;
+            document.getElementById('convVal').innerText = `${convRate.toFixed(1)}%`;
+
+            const estOrganicPerReel = 85000;
+            const estOrganicViews = reelsPerDay * estOrganicPerReel * 40;
+            const estPaidViews = Math.round(budget / 7.5);
+            const totalViews = Math.min(15000000, estOrganicViews + estPaidViews);
+
+            const estInstalls = Math.round(totalViews * (convRate / 100));
+            const payingUsers = Math.round(estInstalls * 0.20);
+            const estRevenue = payingUsers * 12900;
+
+            document.getElementById('resViews').innerText = totalViews.toLocaleString();
+            document.getElementById('resInstalls').innerText = `${estInstalls.toLocaleString()} таталт`;
+            document.getElementById('resRevenue').innerText = `${estRevenue.toLocaleString()}₮`;
+        }
+
+        function downloadAllExcel() {
+            if (typeof XLSX === 'undefined') {
+                showToast("Excel сан ачааллаж байна, түр хүлээнэ үү...");
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+
+            const planData = [
+                ["SEE MEDIA - REEL FILM CHALLENGE: ҮЙЛ АЖИЛЛАГААНЫ ТӨЛӨВЛӨГӨӨ", "", "", "", "", "", "", ""],
+                ["", "", "", "", "", "", "", ""],
+                ["Д/д", "Ажил / Үе шат", "Хариуцах", "Эхлэх огноо", "Дуусах огноо", "Хүлээгдэж буй үр дүн", "Төлөв", "Тэмдэглэл"],
+                [1, "Спонсор байгууллагуудын урт жагсаалт (Lead list) гаргах", "Маркетер", "2026-09-25", "2026-09-27", "30+ зорилтот компани", "Хийгдэж байна", "FMCG, Банк, Үүрэн холбоо, ШТС г.м"],
+                [2, "Спонсорын санал хүргүүлэх, утсаар ярих", "Маркетер", "2026-09-28", "2026-10-05", "10+ компанитай уулзалт товлох", "Төлөвлөсөн", "Имэйл болон танилцуулга хүргэх"],
+                [3, "Спонсор компаниудтай биечлэн уулзах, гэрээлэх", "Маркетер / Баг", "2026-10-01", "2026-10-15", "Gold/Silver/Bronze гэрээнүүд", "Төлөвлөсөн", "Нийт 35 сая₮ босгох"],
+                [4, "Кино багуудын бүртгэл, эхний 2 ангийг хүлээн авах", "Төслийн баг", "2026-09-25", "2026-09-30", "40 кино багийн эхний бүтээлүүд", "Хийгдэж байна", "20 баг бэлэн, үлдэгдлийг татах"],
+                [5, "Спонсоруудын бүтээгдэхүүнийг зохиолд уялдуулах", "Маркетер / Найруулагчид", "2026-10-01", "2026-10-10", "Product Placement төлөвлөгөө", "Төлөвлөсөн", "Багуудын удирдамжинд бүтээгдэхүүн суулгах"],
+                [6, "Сошиал контентын цацалт эхлүүлэх (Өдөр бүр)", "Маркетер", "2026-10-01", "2026-11-01", "Өдөрт 200,000 үзэлт", "Төлөвлөсөн", "FB 3 хуудас (198K) + IG (19.3K) үнэгүй цацах"],
+                [7, "Долоо хоног бүрийн шилдэг кино шалгаруулалт", "Шүүгчид / Маркетер", "2026-09-01", "2026-11-01", "8 шилдэг бүтээл, сошиал сэдэв", "Төлөвлөсөн", "Хэрэглэгчдийн санал асуулга"],
+                [8, "Апп таталт & Үзэлтийн хөрвүүлэлт хийх", "Маркетер", "2026-10-01", "2026-11-01", "SEE MEDIA апп таталт өсгөх", "Төлөвлөсөн", "3-р ангиас эхлэн апп-аар үзэх CTA"],
+                [9, "Гранпри шалгаруулалт & Төгсгөлийн эвент", "Бүх баг", "2026-11-01", "2026-11-05", "30,000,000₮ шагналын эзэн", "Төлөвлөсөн", "Хэвлэл мэдээлэл, тайлан"]
+            ];
+            const ws1 = XLSX.utils.aoa_to_sheet(planData);
+            XLSX.utils.book_append_sheet(wb, ws1, "Үйл ажиллагааны төлөвлөгөө");
+
+            const crmData = [
+                ["СПОНСОР БАЙГУУЛЛАГУУДТАЙ ХАРИЛЦАХ ХЯНАЛТЫН ХҮСНЭГТ", "", "", "", "", "", "", "", "", "", ""],
+                ["", "", "", "", "", "", "", "", "", "", ""],
+                ["Д/д", "Компанийн нэр", "Салбар", "Санал болгох багц", "Үнийн дүн (₮)", "Холбогдох албан тушаалтан", "Утас / Имэйл", "Хүсэлт явуулсан огноо", "Уулзалтын огноо", "Одоогийн төлөв (Status)", "Тэмдэглэл"],
+                [1, "CU Mongolia", "Конвениенс сүлжээ", "Gold", 20000000, "Маркетингийн алба", "marketing@cumongolia.mn", "2026-09-26", "", "Имэйл илгээх", "Кино бүрт дэлгүүр, бүтээгдэхүүн байршуулах"],
+                [2, "GS25 Mongolia", "Конвениенс сүлжээ", "Gold", 20000000, "Брэнд менежер", "brand@gs25.mn", "2026-09-26", "", "Имэйл илгээх", "Өрсөлдөгч санал"],
+                [3, "Unitel Group", "Харилцаа холбоо", "Gold", 20000000, "Маркетингийн захирал", "info@unitel.mn", "2026-09-27", "", "Хүлээгдэж буй", "Дата багц, залуусын брэнд"],
+                [4, "Mobicom Corporation", "Харилцаа холбоо", "Gold", 20000000, "PR менежер", "contact@mobicom.mn", "2026-09-27", "", "Хүлээгдэж буй", "Voo / Сошиал уялдуулах"],
+                [5, "Хаан Банк", "Банк санхүү", "Gold", 20000000, "Дижитал маркетинг", "marketing@khanbank.com", "2026-09-28", "", "Хүлээгдэж буй", "Khaan Pay, залуусын карт"],
+                [6, "Gobi Cashmere", "Хувцас загвар", "Silver", 10000000, "PR менежер", "marketing@gobi.mn", "2026-09-28", "", "Хүлээгдэж буй", "Дүрүүдийн хувцаслалт дээр"],
+                [7, "АПУ ХК (Ундаа)", "FMCG", "Silver", 10000000, "Брэнд менежер", "brand@apu.mn", "2026-09-29", "", "Хүлээгдэж буй", "Frutea, сэнгүр г.м"],
+                [8, "TomYo EdTech", "Боловсрол / Апп", "Bronze", 5000000, "Хамтын ажиллагаа", "partnership@tomyo.mn", "2026-09-29", "", "Хүлээгдэж буй", "Апп доторх сурталчилгаа"],
+                [9, "Shoppy.mn", "И-коммерс", "Bronze", 5000000, "Маркетер", "marketing@shoppy.mn", "2026-09-30", "", "Хүлээгдэж буй", "Баннер сурталчилгаа"]
+            ];
+            const ws2 = XLSX.utils.aoa_to_sheet(crmData);
+            XLSX.utils.book_append_sheet(wb, ws2, "Спонсорын CRM");
+
+            const contentData = [
+                ["SEE MEDIA - СОШИАЛ СУВГУУДЫН КОНТЕНТ ХУВААРИЛАЛТ", "", "", "", "", "", "", "", "", ""],
+                ["", "", "", "", "", "", "", "", "", ""],
+                ["Огноо", "Гарах гараг", "Нийтлэх суваг", "Контентын төрөл", "Кино / Сэдэв", "Тайлбар / Hook", "CTA (Үйлдлийн уриалга)", "Спонсор харуулалт", "Төлөв", "Үзэлт (Бодит)"],
+                ["2026-10-01", "Пүрэв", "FB (3 хуудас) + IG", "Рийл (Анги 1)", "Кино #1 (Гэмт хэрэг)", "Энэ залуу яагаад баригдав? Сэтгэл хөдөлгөм...", "2-р ангийг маргааш үзээрэй!", "Gold спонсор бүтээгдэхүүн", "Төлөвлөсөн", 0],
+                ["2026-10-02", "Баасан", "FB + IG", "Рийл (Анги 2)", "Кино #1 (Үргэлжлэл)", "Хүлээгдээгүй эргэлт гарлаа!", "Бүтэн ангийг See Media апп-аас үзээрэй", "Gold спонсор", "Төлөвлөсөн", 0],
+                ["2026-10-03", "Бямба", "FB + IG Story", "Постер / Зураг", "Тэмцээний мэдээлэл", "Энэ долоо хоногийн шилдэг кинонд санал өгөх", "Сэтгэгдэл үлдээх", "Silver спонсор лого", "Төлөвлөсөн", 0],
+                ["2026-10-04", "Ням", "FB Reels + IG", "BTS (Арын алба)", "Киноны зураг авалтын алдаанууд", "Зураг авалтын хөгжилтэй агшнууд", "See Media дагах", "Бүтээгдэхүүн байршуулалт", "Төлөвлөсөн", 0],
+                ["2026-10-05", "Даваа", "FB (3 хуудас) + IG", "Рийл (Анги 1)", "Кино #2 (Драма / Хайр дурлал)", "Тэр 2 уулзаж чадах уу?", "Маргааш үргэлжилнэ...", "Bronze спонсор", "Төлөвлөсөн", 0],
+                ["2026-10-06", "Мягмар", "FB + IG", "Рийл (Анги 2)", "Кино #2 (Үргэлжлэл)", "Бодит түүхээс сэдэвлэв", "Апп татах линк (Bio дээр)", "Bronze спонсор", "Төлөвлөсөн", 0],
+                ["2026-10-07", "Лхагва", "FB Live / Пост", "Шалгаруулалт", "7 хоногийн Шилдэг Кино зарлах", "1-р долоо хоногийн ялагч кино тодорлоо", "Багуудад баяр хүргэх", "Бүх спонсорууд", "Төлөвлөсөн", 0]
+            ];
+            const ws3 = XLSX.utils.aoa_to_sheet(contentData);
+            XLSX.utils.book_append_sheet(wb, ws3, "Контент хуваарилалт");
+
+            const kpiData = [
+                ["ТӨСЛИЙН ЗОРИЛТОТ ҮЗҮҮЛЭЛТ (KPI) БА САНХҮҮГИЙН ТООЦОО", "", "", "", ""],
+                ["", "", "", "", ""],
+                ["Үзүүлэлт / Ангилал", "Төлөвлөсөн зорилт", "Бодит биелэлт", "Хувь (%)", "Тайлбар"],
+                ["Нийт үзэлт (8 долоо хоногт)", 10000000, 0, "0.0%", "4 сувгаар нийт 8 долоо хоногт хүрэх үзэлт"],
+                ["Өдрийн дундаж үзэлт", 200000, 0, "0.0%", "Өдөрт 1 рийл 4 сувгаар цацах үед"],
+                ["Оролцогч киноны тоо", 40, 20, "50.0%", "Одоогоор 20 баг анкет өгсөн, 40 болгох"],
+                ["Үнэгүй цацах рийлийн тоо", 80, 0, "0.0%", "40 кино тус бүрийн эхний 2 анги"],
+                ["See Media Апп таталт (Шинэ)", 50000, 0, "0.0%", "3-р ангиас эхлэн апп руу татах зорилт"],
+                ["Спонсорын орлого (Нийт)", 35000000, 0, "0.0%", "Gold, Silver, Bronze багцуудын нийлбэр"],
+                ["Шагналын сангийн зардал", 30000000, 30000000, "100.0%", "Гранпри болон шилдэг бүтээлүүдэд"]
+            ];
+            const ws4 = XLSX.utils.aoa_to_sheet(kpiData);
+            XLSX.utils.book_append_sheet(wb, ws4, "KPI ба Санхүү");
+
+            const budgetData = [
+                ["SEE MEDIA - ТӨСӨВ, САНХҮҮГИЙН ТӨЛӨВЛӨГӨӨ", "", "", ""],
+                ["", "", "", ""],
+                ["Төрөл", "Зүйлийн нэр", "Дүн (₮)", "Тайлбар"],
+                ["Орлого", "Gold Спонсор (1)", 20000000, "CU эсвэл ижил түвшний компани"],
+                ["Орлого", "Silver Спонсор (1)", 10000000, "АПУ, Gobi г.м"],
+                ["Орлого", "Bronze Спонсор (1)", 5000000, "Томьёо, Shoppy г.м"],
+                ["Орлого нийт", "", 35000000, ""],
+                ["Зарлага (Шагнал)", "Гранпри (1-р байр)", 15000000, "Эцсийн шалгаруулалтаар шилдэг 1 багт"],
+                ["Зарлага (Шагнал)", "7 хоногийн шилдэг", 8000000, "8 долоо хоног x 1,000,000₮ (Нийт 8 багт)"],
+                ["Зарлага (Шагнал)", "Дэд байр / Бусад шагнал", 7000000, "Шилдэг найруулагч, жүжигчин, 2-р байр (Нийт шагналын сан 30 сая₮)"],
+                ["Зарлага (Бусад)", "Маркетинг, Boost төсөв", 5000000, "Сошиал сурталчилгаа (Retargeting) болон арга хэмжээний зардал"],
+                ["Зарлага нийт", "", 35000000, ""]
+            ];
+            const ws5 = XLSX.utils.aoa_to_sheet(budgetData);
+            XLSX.utils.book_append_sheet(wb, ws5, "Төсөв ба Санхүү");
+
+            XLSX.writeFile(wb, "See_Media_Reel_Challenge_Marketing_Plan.xlsx");
+            showToast("Excel файл амжилттай татагдлаа!");
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            switchWeek(1);
+            updateCalculator();
+
+            const ctx1 = document.getElementById('socialAudienceChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['FB Хуудас 1', 'FB Хуудас 2', 'FB Хуудас 3', 'Instagram'],
+                    datasets: [{
+                        label: 'Дагагчдын тоо',
+                        data: [74000, 65000, 59000, 19300],
+                        backgroundColor: ['#1877F2', '#2563eb', '#3b82f6', '#E1306C'],
+                        borderRadius: 8,
+                        barThickness: 28
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' Дагагчид: ' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 1000) + 'K';
+                                },
+                                font: { size: 10 }
+                            }
+                        },
+                        x: {
+                            ticks: { font: { size: 10, weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
